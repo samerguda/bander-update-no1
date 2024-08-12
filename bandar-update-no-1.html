@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مخالفات -بحر ابو سكينة الجزء الاول</title>
+    <link rel="stylesheet" href="styles.css">
+
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>مخالفات -بحر ابو سكينة الجزء الاول</h1>
+            <p id="datetime"></p>
+        </div>
+        <div class="gallery">
+            <img src="1.jpeg" alt="Photo 1">
+            <img src="2.jpeg" alt="Photo 2">
+            <img src="3.jpeg" alt="Photo 3">
+            <img src="4.jpeg" alt="Photo 4">
+            <img src="5.jpeg" alt="Photo 5">
+            <img src="6.jpeg" alt="Photo 6">
+        </div>
+        <div class="buttons">
+            <button onclick="window.print()">Print</button>
+            <a href="https://wa.me/?text=Check%20out%20these%20photos" target="_blank">Send via WhatsApp</a>
+        </div>
+    </div>
+
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const formattedDateTime = now.toLocaleString();
+            document.getElementById('datetime').textContent = formattedDateTime;
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+    </script>
+</body>
+</html>
