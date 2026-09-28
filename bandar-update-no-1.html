@@ -1,41 +1,408 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مخالفات -بحر ابو سكينة الجزء الاول</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>UNITÉ 6: Alors ton nouveau travail ?</title>
+    <!-- FontAwesome للأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- خط Tajawal للغة العربية -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #faf7fc;
+            --main-node-bg: #efdbff;
+            --main-node-border: #b37feb;
+            --sub-node-bg: #f9f0ff;
+            --sub-node-border: #d3ade6;
+            --leaf-node-bg: #ffffff;
+            --leaf-node-border: #d3ade6;
+            --orange-node-bg: #ffe7ba;
+            --orange-node-border: #ffd591;
+            --line-color: #9254de;
+            --text-dark: #262626;
+            --primary-blue: #1890ff;
+            --success-green: #52c41a;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
+        body {
+            font-family: 'Tajawal', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            padding: 30px 15px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            font-size: 24px;
+            color: #434343;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #8c8c8c;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #f0f0f0;
+        }
+
+        /* Tree structure */
+        .tree, .tree ul, .tree li {
+            position: relative;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tree {
+            direction: ltr; /* keep chart structure left-to-right */
+        }
+
+        .tree ul {
+            padding-left: 35px;
+        }
+
+        .tree li {
+            margin: 12px 0;
+            position: relative;
+        }
+
+        /* Connecting lines */
+        .tree li::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: -20px;
+            width: 2px;
+            background-color: var(--line-color);
+        }
+
+        .tree li:last-child::before {
+            height: 25px;
+        }
+
+        .tree li::after {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: -20px;
+            width: 20px;
+            height: 2px;
+            background-color: var(--line-color);
+        }
+
+        .tree > ul > li::before,
+        .tree > ul > li::after {
+            display: none;
+        }
+
+        /* Node styling */
+        .node {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 20px;
+            background-color: var(--sub-node-bg);
+            border: 2px solid var(--sub-node-border);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            transition: all 0.2s ease;
+            max-width: 100%;
+        }
+
+        .node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .node-text {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f1f1f;
+        }
+
+        .node-arabic {
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 700;
+            color: #531dab;
+            background-color: #f9f0ff;
+            padding: 2px 10px;
+            border-radius: 12px;
+            border: 1px solid #d3ade6;
+            direction: rtl;
+        }
+
+        .main-title {
+            background-color: var(--main-node-bg);
+            border-color: var(--main-node-border);
+            font-size: 18px;
+            padding: 12px 24px;
+        }
+
+        .orange-node {
+            background-color: #ffe7ba;
+            border-color: #ffbb96;
+        }
+
+        /* Copy Button */
+        .btn-copy {
+            background: #ffffff;
+            border: 1px solid #d9d9d9;
+            color: #595959;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .btn-copy:hover {
+            color: var(--primary-blue);
+            border-color: var(--primary-blue);
+            background-color: #e6f7ff;
+        }
+
+        .btn-copy.copied {
+            background-color: var(--success-green);
+            border-color: var(--success-green);
+            color: #ffffff;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
+
+    <header>
+        <h1>الخريطة الذهنية التفاعلية - Unité 6</h1>
+        <p>انقر على أيقونة النسخ المجاورة للعنوان لنسخ النص الفرنسي مباشرة</p>
+    </header>
+
     <div class="container">
-        <div class="header">
-            <h1>مخالفات -بحر ابو سكينة الجزء الاول</h1>
-            <p id="datetime"></p>
-        </div>
-        <div class="gallery">
-            <img src="1.jpeg" alt="Photo 1">
-            <img src="2.jpeg" alt="Photo 2">
-            <img src="3.jpeg" alt="Photo 3">
-            <img src="4.jpeg" alt="Photo 4">
-            <img src="5.jpeg" alt="Photo 5">
-            <img src="6.jpeg" alt="Photo 6">
-        </div>
-        <div class="buttons">
-            <button onclick="window.print()">Print</button>
-            <a href="https://wa.me/?text=Check%20out%20these%20photos" target="_blank">Send via WhatsApp</a>
+        <div class="tree">
+            <ul>
+                <li>
+                    <!-- Main Title -->
+                    <div class="node main-title">
+                        <span class="node-text">UNITÉ 6: Alors ton nouveau travail ?</span>
+                        <button class="btn-copy" onclick="copyText(this, 'UNITÉ 6: Alors ton nouveau travail ?')" title="نسخ النص الفرنسي">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+
+                    <ul>
+                        <!-- Section 1: Grammaire -->
+                        <li>
+                            <div class="node">
+                                <span class="node-arabic">جرامر</span>
+                            </div>
+                            <ul>
+                                <li>
+                                    <div class="node">
+                                        <span class="node-text">Les questions</span>
+                                        <button class="btn-copy" onclick="copyText(this, 'Les questions')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                    </div>
+                                    <ul>
+                                        <li>
+                                            <div class="node">
+                                                <span class="node-text">Avec est-ce que</span>
+                                                <button class="btn-copy" onclick="copyText(this, 'Avec est-ce que')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="node">
+                                                <span class="node-text">Sans est-ce que</span>
+                                                <button class="btn-copy" onclick="copyText(this, 'Sans est-ce que')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <div class="node">
+                                        <span class="node-text">Devoir + infinitif</span>
+                                        <button class="btn-copy" onclick="copyText(this, 'Devoir + infinitif')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="node">
+                                        <span class="node-text">Pouvoir + infinitif</span>
+                                        <button class="btn-copy" onclick="copyText(this, 'Pouvoir + infinitif')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="node">
+                                        <span class="node-text">Les verbes pronominaux</span>
+                                        <button class="btn-copy" onclick="copyText(this, 'Les verbes pronominaux')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                    </div>
+                                    <ul>
+                                        <li>
+                                            <div class="node">
+                                                <span class="node-text">Au présent</span>
+                                                <button class="btn-copy" onclick="copyText(this, 'Au présent')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="node">
+                                                <span class="node-text">Au futur proche</span>
+                                                <button class="btn-copy" onclick="copyText(this, 'Au futur proche')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <div class="node">
+                                        <span class="node-text">Les qualités et les défauts</span>
+                                        <button class="btn-copy" onclick="copyText(this, 'Les qualités et les défauts')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="node">
+                                        <span class="node-text">L'accord des adjectifs</span>
+                                        <button class="btn-copy" onclick="copyText(this, 'L\'accord des adjectifs')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Section 2: Vocabulaire -->
+                        <li>
+                            <div class="node orange-node">
+                                <span class="node-arabic" style="color: #d46b08;">فوكاب DA</span>
+                            </div>
+                            <ul>
+                                <li>
+                                    <div class="node orange-node">
+                                        <span class="node-text">La description physique</span>
+                                        <button class="btn-copy" onclick="copyText(this, 'La description physique')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="node orange-node">
+                                        <span class="node-text">Les activités quotidiennes</span>
+                                        <button class="btn-copy" onclick="copyText(this, 'Les activités quotidiennes')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Section 3: Questions -->
+                        <li>
+                            <div class="node">
+                                <span class="node-arabic">الأسئلة</span>
+                            </div>
+                        </li>
+
+                        <!-- Section 4: Expression -->
+                        <li>
+                            <div class="node">
+                                <span class="node-arabic">.....</span>
+                            </div>
+                            <ul>
+                                <li>
+                                    <div class="node">
+                                        <span class="node-text">Parle de ses habitudes</span>
+                                        <button class="btn-copy" onclick="copyText(this, 'Parle de ses habitudes')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="node">
+                                        <span class="node-text">Exprimer la nécessité</span>
+                                        <button class="btn-copy" onclick="copyText(this, 'Exprimer la nécessité')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="node">
+                                        <span class="node-text">Prendre rendez-vous par téléphone</span>
+                                        <button class="btn-copy" onclick="copyText(this, 'Prendre rendez-vous par téléphone')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
         </div>
     </div>
 
+    <!-- Toast message -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-check-circle"></i>
+        <span>تم نسخ النص بنجاح!</span>
+    </div>
+
     <script>
-        function updateDateTime() {
-            const now = new Date();
-            const formattedDateTime = now.toLocaleString();
-            document.getElementById('datetime').textContent = formattedDateTime;
+        function copyText(btn, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const icon = btn.querySelector('i');
+                const originalClass = icon.className;
+                
+                icon.className = 'fa-solid fa-check';
+                btn.classList.add('copied');
+
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+
+                setTimeout(() => {
+                    icon.className = originalClass;
+                    btn.classList.remove('copied');
+                    toast.classList.remove('show');
+                }, 1800);
+            }).catch(err => {
+                console.error('فشل النسخ: ', err);
+            });
         }
-        updateDateTime();
-        setInterval(updateDateTime, 60000);
     </script>
 </body>
 </html>
